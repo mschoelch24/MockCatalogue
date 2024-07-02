@@ -5,7 +5,6 @@ import sys
 
 def main():
     input_file = sys.argv[1]
-
     t0 = time.time()
 
     simname,_ = os.path.splitext(input_file)
@@ -37,15 +36,15 @@ def main():
     df['pmdec'] = pmdec
     df['vr'] = vr
 
-    # galactic coordinates visualization:
+    # Coordinate transformation: cartesian galactocentric to galactic heliocentric:
     l_input, b_input, distance, pml, pmb, vr = gal_heliocen(x,y,z,vx,vy,vz)
 
     df['l'] = l_input
     df['b'] = b_input
     df['d'] = distance
 
-    print("Coordinate transformations complete, save first part of df.")
-    df.to_csv(simname + "_2coords.csv")
+    print("Coordinate transformations complete, save df.")
+    df.to_csv(simname + "_coords.csv")
 
     """
     del x, y, z, vx, vy, vz, ra, dec, parallax, pmra, pmdec, vr, pml, pmb
