@@ -60,8 +60,8 @@ def rotationz(x,y,z,vx,vy,vz, theta = 0):
 
 
 # Lallement+ Marshall extinction map:
-# read combi_lallement22_Marshall2006.dat to a list of lists
-datContent = [i.strip().split() for i in open('./combi_lallement22_Marshall2006.dat').readlines()]
+# read extmap_Lallement22_Marshall06.dat to a list of lists
+datContent = [i.strip().split() for i in open('./extmap_Lallement22_Marshall06.dat').readlines()]
 df2 = pd.DataFrame(datContent, dtype = float)
 df2.rename(columns={0: 'l', 1: 'b'}, inplace=True)
 df2.rename(columns={x:y for x,y in zip(df2.columns,range(0,(len(df2.columns))))})
