@@ -139,7 +139,7 @@ def extinction_calc(l, b, d, id_n):
         #lastly, in a:
         ext_d = intb1 + fact_l * (intb2 - intb1)
         if id_n % 1000000 == 0:
-            print("{}/{}".format(id_n, (df.shape)[0]))
+            print("id:", id_n)
         del A000, A001, A010, A011, A100, A101, A110, A111
         gc.collect()
     except Exception as e:
