@@ -32,14 +32,14 @@ def main():
     print("****Starting coordinate transformation****")
 
     # Coordinate transformation: cartesian galactocentric to equatorial heliocentric:
-    ra, dec, parallax, pmra, pmdec, vr = equat_heliocen(x,y,z,vx,vy,vz)
+    ra, dec, parallax, pmra, pmdec, radial_velocity = equat_heliocen(x,y,z,vx,vy,vz)
 
     df['ra'] = ra
     df['dec'] = dec
     df['parallax'] = parallax
     df['pmra'] = pmra
     df['pmdec'] = pmdec
-    df['vr'] = vr
+    df['radial_velocity'] = radial_velocity
 
     # Coordinate transformation: cartesian galactocentric to galactic heliocentric:
     l_input, b_input, distance, pml, pmb, vr = gal_heliocen(x,y,z,vx,vy,vz)
@@ -52,7 +52,7 @@ def main():
     df.to_csv(simname + "_coords.csv")
 
     """
-    del x, y, z, vx, vy, vz, ra, dec, parallax, pmra, pmdec, vr, pml, pmb
+    del x, y, z, vx, vy, vz, ra, dec, parallax, pmra, pmdec, radial_velocity, pml, pmb
     gc.collect()
     """
     t4 = time.time()
