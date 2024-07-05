@@ -1,5 +1,5 @@
 # MockCatalogue
-Python tool for creating mock catalogues of Gaia data.
+Python tool for creating mock catalogues of Gaia data.\
 Generates a catalogue of synthetic data including the Gaia observables 'source_id', 'ra', 'dec', 'parallax', 'plx_error', 'pmra', 'pmdec', 'pmra_error', 'pmdec_error', 'radial_velocity', 'l', 'b', 'd', 'G', and 'Av', from an input simulation with parameters 'x', 'y', 'z', 'vx', 'vy', and 'vz'.  
 Catalogues will be adjustable using different Gaia error models, absorption models, and stellar tracers.
 
@@ -17,17 +17,17 @@ After downloading all files, make exe_mockcat.sh executable by running
 ```bash
 chmod +x exe_mockcat.sh
 ```
-In exe_mockcat.sh, edit the "input_file" with the name of the simulation file. Add "ncores" depending on the cores available, and change "nruns" to split the full source sample into fragments to be run in observables.py. If the input file does not have the ordered columns 'x', 'y', 'z', 'vx', 'vy', and 'vz', edit the column identifiers in coord_transform.py.
+In exe_mockcat.sh, edit the "input_file" with the name of the simulation file. Add "ncores" depending on the cores available, and change "nruns" to split the full source sample into fragments to be run in observables.py. If the input file does not have the ordered columns 'x', 'y', 'z', 'vx', 'vy', and 'vz', edit the column identifiers in coord_transform.py.\
 Finally, run exe_mockcat.sh:
 ```bash
 ./exe_mockcat.sh
 ```
 
 ## Dependencies
-Python >= 3.7
-Numpy
-Pandas
-PyGaia (https://github.com/agabrown/PyGaia)
+- Python >= 3.7
+- Numpy
+- Pandas
+- PyGaia (https://github.com/agabrown/PyGaia)
 
 ## License
 ...
