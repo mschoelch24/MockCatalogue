@@ -19,12 +19,17 @@ def main():
     vy = np.array(df.iloc[:,4])
     vz = np.array(df.iloc[:,5])
 
+    source_id = range(0,len(df)) # Assigning a source id for sorting.
+    df['source_id'] = source_id
+
     t1 = time.time()
     t_import = t1 - t0
     print("Import time: ", '%.2f' % (t_import/60) ,"min")
 
     # adding rotation:
     #x,y,z,v_x,v_y,v_z = rotationz(x,y,z,v_x,v_y,v_z, 30)
+    
+    print("****Starting coordinate transformation****")
 
     # Coordinate transformation: cartesian galactocentric to equatorial heliocentric:
     ra, dec, parallax, pmra, pmdec, vr = equat_heliocen(x,y,z,vx,vy,vz)
@@ -52,7 +57,7 @@ def main():
     """
     t4 = time.time()
     t_total = t4 - t0
-    print("Total time coords:", '%.2f' % (t_total/60) ,"min")
+    print("Total time coord_transform.py:", '%.2f' % (t_total/60) ,"min")
 
 if __name__ == "__main__":
     main()
