@@ -8,7 +8,7 @@ def main():
     t0 = time.time()
 
     simname,_ = os.path.splitext(input_file)
-    df = read_sim(input_file)[:100]
+    df = read_sim(input_file)[:100] ###remove for full run###
     print("Opening simulation",simname, "with columns", list(df),"and length", len(df))
 
     x = np.array(df.iloc[:,0]) #change if input columns are different (e.g. x = np.array(df['col9']))
@@ -49,7 +49,7 @@ def main():
     df['d'] = distance
 
     print("Coordinate transformations complete, save df.")
-    df.to_csv(simname + "_coords.csv")
+    df.to_pickle(simname + "_coords.pkl")
 
     """
     del x, y, z, vx, vy, vz, ra, dec, parallax, pmra, pmdec, radial_velocity, pml, pmb

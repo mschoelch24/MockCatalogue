@@ -9,18 +9,18 @@ def main():
     n = int(sys.argv[4])
 
     simname,_ = os.path.splitext(input_file)
-    input_df = simname + '_coords.csv'
+    input_df = simname + '_coords.pkl'
 
     t0 = time.time()
-    df = pd.read_csv(input_df, index_col=0)
+    df = pd.read_pickle(input_df)
     
     # set limits of sources to process in this run:
     s_tot = len(df)
     s_i = n * (s_tot//nruns) - (s_tot//nruns)
-    s_f = n * (s_tot//nruns)
+    s_f = n * (s_tot//nruns) - 1
 
     # apply limits to the dataframe:
-    df = pd.read_csv(input_df, index_col=0)[s_i:s_f]
+    df = pd.read_pickle(input_df)[s_i:s_f+1]
     print("Processing stars", s_i, "to", s_f, "in run", n , "/", nruns)
 
     source_id = range(s_i, s_f) # Assigning a source id for sorting.
@@ -55,7 +55,7 @@ def main():
     dfobs['pmra_error'] = pmra_error
     dfobs['pmdec_error'] = pmdec_error
 
-    dfobs.to_csv(simname + '_observ_out_pt'+ str(n) +'.csv')
+    dfobs.to_pickle(simname + '_observ_out_pt'+ str(n) +'.pkl')
     print("Observables dataframe no.", n ,"contains columns", list(dfobs), "and has length", len(dfobs))
 
     t4 = time.time()

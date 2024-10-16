@@ -81,10 +81,16 @@ def extinction_calc(l, b, d, id_n):
         if (abs(b_index) >= 89.0):
             b_index = b_index_up
 
-        row_index1 = np.where((df2['l']== int(l_index)) & (df2['b'] == int(b_index)))[0][0]
-        row_index2 = np.where((df2['l']== l_index ) & (df2['b'] == b_index_up))[0][0]
-        row_index3 = np.where((df2['l']== int(l_index_up)) & (df2['b'] == int(b_index)))[0][0]
-        row_index4 = np.where((df2['l']== l_index_up ) & (df2['b'] == b_index_up))[0][0]
+        l_lim_lo = np.array(df2.index[(df2['l']== int(l_index))])
+        l_lim_hi = np.array(df2.index[(df2['l']== int(l_index_up))])
+
+        b_lim_lo = np.array(df2.index[(df2['b']== int(b_index))])
+        b_lim_hi = np.array(df2.index[(df2['b']== int(b_index_up))])
+        
+        row_index1 = np.intersect1d(l_lim_lo, b_lim_lo)[0]
+        row_index2 = np.intersect1d(l_lim_lo, b_lim_hi)[0]
+        row_index3 = np.intersect1d(l_lim_hi, b_lim_lo)[0]
+        row_index4 = np.intersect1d(l_lim_hi, b_lim_hi)[0]
 
         # make difference array from distance row - distance of source, excluding extinction values (odd indices):
         ext_row = np.asarray(df2.iloc[[row_index1]])[0]

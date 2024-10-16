@@ -11,14 +11,14 @@ def main():
     t0 = time.time()
     
     # coordinate.py output dataframe:
-    df1 = pd.read_csv(simname + '_coords.csv', index_col=0) 
+    df1 = pd.read_pickle(simname + '_coords.pkl') 
 
     # adding all the observables from df fragments:
-    fragmt_list = sorted(glob.glob('*observ_out_pt*.csv'))
+    fragmt_list = sorted(glob.glob('*observ_out_pt*.pkl'))
 
-    df2 = pd.read_csv(fragmt_list[0], index_col=0)
+    df2 = pd.read_pickle(fragmt_list[0])
     for fragmt in fragmt_list[1:]:
-        dfn = pd.read_csv(fragmt, index_col=0)
+        dfn = pd.read_pickle(fragmt)
         df2 = pd.concat([df2, dfn], ignore_index=True)
 
     if len(df2) == len(df1):
@@ -27,7 +27,7 @@ def main():
         "Dataframes cannot be merged due to different lengths."
         pass
 
-    df1.to_csv(simname + '_out.csv')
+    df1.to_pickle(simname + '_out.pkl')
     print("Final dataframe contains columns", list(df1), "and has length", len(df1))
 
     tf = time.time()
