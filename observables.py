@@ -23,7 +23,7 @@ def main():
     df = pd.read_pickle(input_df)[s_i:s_f+1]
     print("Processing stars", s_i, "to", s_f, "in run", n , "/", nruns)
 
-    source_id = range(s_i, s_f) # Assigning a source id for sorting.
+    source_id = range(s_i, s_f+1) # Assigning a source id for sorting.
 
     # New data frame to save only the observables.
     dfobs = pd.DataFrame()
