@@ -4,7 +4,7 @@ input_file='Bar_ome45_short_carte.fits' #example input file, can be full path, e
 #input_file='../2Project/snapshots/PMcrs0a0.9000_wo_LMC_DM.pkl'
 
 ncores='5' # input number of cores here
-nruns='10' # input number of runs of observables.py
+nruns='1' # input number of runs of observables.py
 
 echo "input_file: $input_file"
 echo "ncores: $ncores"

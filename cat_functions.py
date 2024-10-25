@@ -8,7 +8,7 @@ import astropy.coordinates as coord
 from multiprocessing import Pool
 import gc
 from pygaia.errors.astrometric import parallax_uncertainty, proper_motion_uncertainty
-
+from scipy.interpolate import RegularGridInterpolator
 
 def open_fits(file):
     with fits.open(file) as data:
