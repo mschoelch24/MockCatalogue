@@ -45,8 +45,8 @@ def main():
     dfobs['G'] = G
 
     t3 = time.time()
-    t_Gmag = t3 - t1
-    print("G mag computation finished in", '%.2f' % (t_ext/60) ,"min")
+    t_Gmag = t3 - t2
+    print("G mag computation finished in", '%.2f' % (t_Gmag/60) ,"min")
 
     
     print("****Starting uncertainties calculation****")

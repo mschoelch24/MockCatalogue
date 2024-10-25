@@ -109,20 +109,6 @@ def extinction_calc(l, b, d, id_n):
                 col_index = col_index - 2
                 col_index2 = col_index2 -2
 
-        l0 = df2.iloc[int(row_index1),0]
-        l1 = df2.iloc[int(row_index3),0]
-        b0 = df2.iloc[int(row_index1),1]
-        b1 = df2.iloc[int(row_index4),1]
-        d0 = df2.iloc[int(row_index1),int(col_index)]
-        d1 = df2.iloc[int(row_index1),int(col_index2)]
-
-        db = b1 - b0
-        dl = l1 - l0
-        dr = d1 - d0
-        fact_r = (d - d0)/dr
-        fact_b = (b - b0)/db
-        fact_l = (l - l0)/dl
-
         A000 = df2.iloc[int(row_index1), int(col_index +1)]
         A001 = df2.iloc[int(row_index1), int(col_index2 +1)]
         A010 = df2.iloc[int(row_index2), int(col_index +1)]
@@ -132,22 +118,15 @@ def extinction_calc(l, b, d, id_n):
         A110 = df2.iloc[int(row_index4), int(col_index +1)]
         A111 = df2.iloc[int(row_index4), int(col_index2 +1)]
 
-        # first the interpolations in d:
-        intd1 = A000 + fact_r * (A001 - A000)
-        intd2 = A010 + fact_r * (A011 - A010)
-        intd3 = A100 + fact_r * (A101 - A100)
-        intd4 = A110 + fact_r * (A111 - A110)
+        l_vals = np.array([l_index, l_index+1])
+        b_vals = np.array([b_index, b_index+1])
+        d0 = df2.iloc[int(row_index1),int(col_index)]
+        d1 = df2.iloc[int(row_index1),int(col_index2)]
+        d_vals = np.array([d0,d1])
 
-         # then, in b:
-        intb1 = intd1 + fact_b * (intd2 - intd1)
-        intb2 = intd3 + fact_b * (intd4 - intd3)
-
-        #lastly, in a:
-        ext_d = intb1 + fact_l * (intb2 - intb1)
-        if id_n % 1000000 == 0:
-            print("id:", id_n)
-        del A000, A001, A010, A011, A100, A101, A110, A111
-        gc.collect()
+        extinction_vals = np.array([[[A000,A001],[A010,A011]],[[A100,A101],[A110,A111]]])
+        rgi = RegularGridInterpolator((l_vals, b_vals, d_vals), extinction_vals, bounds_error=False, fill_value = None)
+        ext_d = rgi(np.array([l, b, d]))[0]
     except Exception as e:
         print("Failed on star with id ", id_n)
         print(e)
