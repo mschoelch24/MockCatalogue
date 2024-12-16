@@ -7,6 +7,7 @@ from astropy.coordinates import SkyCoord
 import astropy.coordinates as coord
 from multiprocessing import Pool
 import gc
+from scipy.interpolate import RegularGridInterpolator
 from pygaia.errors.astrometric import parallax_uncertainty, proper_motion_uncertainty
 
 
