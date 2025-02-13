@@ -4,7 +4,6 @@ import pandas as pd
 ######### LMC properties #############
 i = 34 #galaxy inclination angle (degrees)
 theta = 220 #galaxy position angle (degrees)
-theta_ma = 220 #
 dist_LMC = 49.5 #kpc
 alpha_c_LMC = 81.28
 delta_c_LMC = -69.78
@@ -13,25 +12,16 @@ mu_y_c_LMC = 0.385
 mu_z_c_LMC = -1.115 # mas yr−1
 
 
-def first_rotation(xi, eta, zeta, theta_ma):
-    print("first rotation...")
-    R_rot1 = np.array([[np.cos(np.radians(theta_ma)), -np.sin(np.radians(theta_ma)), 0],
-                    [np.sin(np.radians(theta_ma)), np.cos(np.radians(theta_ma)), 0],
-                    [0, 0, 1]])
-    vector = np.stack([xi,eta,zeta],axis=1)
-    result = np.dot(R_rot1,vector.T).T
-    return result[:,0], result[:,1], result[:,2]
-
-def second_rotation(xi_rot1, eta_rot1, zeta_rot1, theta_lon, i_incl):
+def rotation(xi, eta, zeta, theta_lon, i_incl):
     print("second rotation...")
-    R_rot2 = np.array([[np.cos(np.radians(theta_lon)), -np.sin(np.radians(theta_lon))*np.cos(np.radians(i_incl)), -np.sin(np.radians(theta_lon))*np.sin(np.radians(i_incl))],
+    R_rot = np.array([[np.cos(np.radians(theta_lon)), -np.sin(np.radians(theta_lon))*np.cos(np.radians(i_incl)), -np.sin(np.radians(theta_lon))*np.sin(np.radians(i_incl))],
                     [np.sin(np.radians(theta_lon)), np.cos(np.radians(theta_lon))*np.cos(np.radians(i_incl)), np.cos(np.radians(theta_lon))*np.sin(np.radians(i_incl))],
                     [0, -np.sin(np.radians(i_incl)), np.cos(np.radians(i_incl))]])
-    vector = np.stack([xi_rot1,eta_rot1,zeta_rot1],axis=1)
-    result = np.dot(R_rot2,vector.T).T
+    vector = np.stack([xi,eta,zeta],axis=1)
+    result = np.dot(R_rot,vector.T).T
     return result[:,0], result[:,1], result[:,2]
 
-def rect_heliocentric_frame(xi_rot2, eta_rot2, zeta_rot2, dist_LMC, alpha_c_LMC, delta_c_LMC):
+def rect_heliocentric_frame(xi_rot, eta_rot, zeta_rot, dist_LMC, alpha_c_LMC, delta_c_LMC):
     print("translation...")
     R_proj = np.array([[np.sin(np.radians(alpha_c_LMC)), -np.cos(np.radians(alpha_c_LMC))*np.sin(np.radians(delta_c_LMC)), -np.cos(np.radians(alpha_c_LMC))*np.cos(np.radians(delta_c_LMC))],
                        [-np.cos(np.radians(alpha_c_LMC)), -np.sin(np.radians(alpha_c_LMC))*np.sin(np.radians(delta_c_LMC)), -np.sin(np.radians(alpha_c_LMC))*np.cos(np.radians(delta_c_LMC))],
@@ -39,7 +29,7 @@ def rect_heliocentric_frame(xi_rot2, eta_rot2, zeta_rot2, dist_LMC, alpha_c_LMC,
     T_proj = np.array([dist_LMC*np.cos(np.radians(delta_c_LMC))*np.cos(np.radians(alpha_c_LMC)),
                        dist_LMC*np.cos(np.radians(delta_c_LMC))*np.sin(np.radians(alpha_c_LMC)),
                        dist_LMC*np.sin(np.radians(delta_c_LMC))])
-    vector = np.stack([xi_rot2,eta_rot2,zeta_rot2],axis=1)
+    vector = np.stack([xi_rot,eta_rot,zeta_rot],axis=1)
     result = np.dot(R_proj,vector.T).T + T_proj
     return result[:,0], result[:,1], result[:,2]
 
@@ -54,9 +44,8 @@ def shift_3DLMC(x,y,z):
     Shifting the input simulation positions (x,y,z) to an external galaxy's position, as seen in a heliocentric reference frame (parallax,ra,dec). Using rotation and translation  matrices from '00.Galaxy_model_definitiu.ipybn'.
     """
 
-    xi_rot1, eta_rot1, zeta_rot1 = first_rotation(x,y,z, theta_ma)
-    xi_rot2, eta_rot2, zeta_rot2 = second_rotation(xi_rot1, eta_rot1, zeta_rot1, theta, i)
-    x_h, y_h, z_h = rect_heliocentric_frame(xi_rot2, eta_rot2, zeta_rot2, dist_LMC, alpha_c_LMC, delta_c_LMC)
+    xi_rot, eta_rot, zeta_rot = rotation(xi, eta, zeta, theta, i)
+    x_h, y_h, z_h = rect_heliocentric_frame(xi_rot, eta_rot, zeta_rot, dist_LMC, alpha_c_LMC, delta_c_LMC)
     rax, decx, parx = gaia_observables(x_h, y_h, z_h)
     print("Median parallax, ra ,dec after shift (according to 3D transformation): ", 1/np.median(parx), np.median(rax), np.median(decx))
     return x_h, y_h, z_h
