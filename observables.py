@@ -6,7 +6,8 @@ def main():
     input_file = sys.argv[1]
     ncores = sys.argv[2]
     nruns = int(sys.argv[3])
-    n = int(sys.argv[4])
+    rls = sys.argv[4]
+    n = int(sys.argv[5])
 
     simname,_ = os.path.splitext(input_file)
     input_df = simname + '_coords.pkl'
@@ -50,10 +51,12 @@ def main():
 
     
     print("****Starting uncertainties calculation****")
-    plx_error, pmra_error, pmdec_error = uncertainties(G)
-    dfobs['plx_error'] = plx_error
-    dfobs['pmra_error'] = pmra_error
-    dfobs['pmdec_error'] = pmdec_error
+    plx_error, ra_error, dec_error, pmra_error, pmdec_error = uncertainties(G, rls)
+    dfobs['plx_error'] = plx_error/1000 #converting to mas
+    dfobs['ra_error'] = ra_error/1000
+    dfobs['dec_error'] = dec_error/1000
+    dfobs['pmra_error'] = pmra_error/1000 #mas/yr
+    dfobs['pmdec_error'] = pmdec_error/1000
 
     dfobs.to_pickle(simname + '_observ_out_pt'+ str(n) +'.pkl')
     print("Observables dataframe no.", n ,"contains columns", list(dfobs), "and has length", len(dfobs))
