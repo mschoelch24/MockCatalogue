@@ -159,14 +159,33 @@ def magnitude(d, Av):
 
 def uncertainties(G, rls = 'dr3'):
     """
-    Importing uncertainties from the PyGaia package (https://github.com/agabrown/PyGaia)
+    Importing uncertainty factors from the PyGaia package (https://github.com/agabrown/PyGaia)
     Input:
         G - G magnitude of star (array or scalar)
     Optional: 
         rls - Gaia data release (default: 'dr3')
     Output: 
-        Uncertainties in parallax, proper motion ra and proper motion dec
+        Uncertainties (in micro-arcsec) in parallax, ra, dec, proper motion ra and proper motion dec
+    
+    *Note that GaiaNIR requires input file (e.g. 'GmagSig_K5IIIAv0-M5.csv', where M5 stands for the medium mission over a 5-yr baseline).
+    Parallax uncertainties are computed from a RC spectrum, using GaiaNIR simulation of Hobbs et al. (in prep). *
     """
-    plx_unc = parallax_uncertainty(G, release = rls)
-    pmra_unc, pmdec_unc = proper_motion_uncertainty(G, release = rls)
-    return plx_unc, pmra_unc, pmdec_unc
+    _t_factor = {"dr3": 1.0, "dr4": 0.749, "dr5": 0.527}
+    pos_alpha_factor = {"dr3": 0.8, "dr4": 0.8, "dr5": 0.8, "NIR":0.8}
+    pos_delta_factor = {"dr3": 0.7, "dr4": 0.7, "dr5": 0.7, "NIR":0.7}
+    pm_alpha_factor = {"dr3": 1.03, "dr4": 0.58, "dr5": 0.29, "NIR":0.29}
+    pm_delta_factor = {"dr3": 0.89, "dr4": 0.50, "dr5": 0.25, "NIR":0.25}
+    gatefloor = np.power(10.0, 0.4 * (13.0 - 15.0))
+    z = np.maximum(gatefloor, np.power(10.0, 0.4 * (G - 15.0)))
+    if (rls == 'NIR'):
+        nir = pd.read_csv('GmagSig_K5IIIAv0-M5.csv')
+        interp_func = interp1d(nir['Gmag'], nir['sigma'], kind='linear', fill_value="extrapolate")
+        plx_unc = interp_func(G) #in micro-as
+    else:
+        plx_unc = np.sqrt(40 + 800 * z + 30 * z * z) * _t_factor[rls]
+
+    ra_unc = plx_unc * pos_alpha_factor[rls]
+    dec_unc = plx_unc * pos_delta_factor[rls]
+    pmra_unc = plx_unc * pm_alpha_factor[rls]
+    pmdec_unc = plx_unc * pm_delta_factor[rls]
+    return plx_unc, ra_unc, dec_unc, pmra_unc, pmdec_unc
