@@ -32,20 +32,36 @@ def read_sim(file):
         raise ValueError(f'Unsupported filetype: {ext}')
     return reader(file)
 
-def equat_heliocen(x,y,z,vx,vy,vz):
+# Coordinate transformations:
+def cartesian2equatorial(x,y,z,vx,vy,vz):
   gc = SkyCoord(x*u.kpc, y*u.kpc, z*u.kpc, v_x = vx*(u.km/u.s), v_y = vy*(u.km/u.s), v_z = vz*(u.km/u.s), frame=coord.Galactocentric, z_sun = 2 *u.pc)
   hc = gc.transform_to(coord.ICRS)
-  return hc.ra.degree, hc.dec.degree, hc.distance.kpc, hc.pm_ra_cosdec.value, hc.pm_dec.value, hc.radial_velocity.value #*u.s/u.km
+  return hc.ra.degree, hc.dec.degree, hc.distance.kpc, hc.pm_ra_cosdec.value, hc.pm_dec.value, hc.radial_velocity.value #*u.mas/u.yr
 
-def gal_heliocen(x,y,z,vx,vy,vz):
+def cartesian2galactic(x,y,z,vx,vy,vz):
   gc = SkyCoord(x*u.kpc, y*u.kpc, z*u.kpc, v_x = vx*(u.km/u.s), v_y = vy*(u.km/u.s), v_z = vz*(u.km/u.s), frame=coord.Galactocentric, z_sun = 2 *u.pc)
   hc = gc.transform_to('galactic')
   return hc.l.degree, hc.b.degree, hc.distance.kpc, hc.pm_l_cosb.value, hc.pm_b.value, hc.radial_velocity.value #*u.s/u.km
 
-def cart_galactocen(ra, dec, distance, pmra, pmdec, vr):
+def equatorial2cartesian(ra, dec, distance, pmra, pmdec, vr):
   hc = coord.SkyCoord(ra*u.degree, dec*u.degree, distance*u.kpc, pm_ra_cosdec = pmra *u.mas/u.yr, pm_dec = pmdec *u.mas/u.yr, radial_velocity = vr*u.km/u.s, frame='icrs')
   gc = hc.transform_to(coord.Galactocentric) #(galcen_distance=1*u.kpc))
   return gc.x.value, gc.y.value, gc.z.value, gc.v_x.value, gc.v_y.value, gc.v_z.value
+
+def equatorial2galactic(ra, dec, distance, pmra, pmdec, vr):
+  hc = coord.SkyCoord(ra*u.degree, dec*u.degree, distance*u.kpc, pm_ra_cosdec = pmra *u.mas/u.yr, pm_dec = pmdec *u.mas/u.yr, radial_velocity = vr*u.km/u.s, frame='icrs')
+  gh = hc.transform_to('galactic') #(galcen_distance=1*u.kpc))
+  return gh.l.degree, gh.b.degree, gh.distance.kpc, gh.pm_l_cosb.value, gh.pm_b.value, gh.radial_velocity.value
+
+def galactic2equatorial(l, b, distance, pm_l_cosb, pm_b, vr):
+    gh = coord.SkyCoord(l*u.degree, b*u.degree, distance*u.kpc, pm_l_cosb=pm_l_cosb*u.mas/u.yr, pm_b=pm_b*u.mas/u.yr, radial_velocity=vr*u.km/u.s, frame='galactic')
+    hc = gh.transform_to('icrs')
+    return hc.ra.degree, hc.dec.degree, hc.distance.kpc, hc.pm_ra_cosdec.value, hc.pm_dec.value, hc.radial_velocity.value
+
+def galactic2cartesian(x_l, x_b, x_distance, x_pm_l_cosb, x_pm_b, x_vr):
+    hc = SkyCoord(l=x_l*u.degree, b=x_b*u.degree, distance=x_distance*u.kpc, pm_l_cosb=x_pm_l_cosb*u.mas/u.yr, pm_b=x_pm_b*u.mas/u.yr, radial_velocity=x_vr*u.km/u.s, frame='galactic')
+    gc = hc.transform_to(coord.Galactocentric(z_sun=2*u.pc))  # Reverse transformation
+    return gc.x.to(u.kpc).value, gc.y.to(u.kpc).value, gc.z.to(u.kpc).value, gc.v_x.to(u.km/u.s).value, gc.v_y.to(u.km/u.s).value, gc.v_z.to(u.km/u.s).value
 
 def rotationz(x,y,z,vx,vy,vz, theta = 0):
     """
@@ -59,7 +75,6 @@ def rotationz(x,y,z,vx,vy,vz, theta = 0):
     vy2 = vx * np.sin(np.radians(theta)) + vy * np.cos(np.radians(theta))
     vz2 = vz
     return x2, y2, z2, vx2, vy2, vz2
-
 
 # Lallement+ Marshall extinction map:
 # read extmap_Lallement22_Marshall06.dat to a list of lists
@@ -153,7 +168,7 @@ def magnitude(d, Av):
     Output: 
         G - in mag
     """
-    K = -1.62 + 5 * np.log10(d*10e3) - 5 + (0.114* Av)
+    K = -1.62 + 5 * np.log10(d*1e3) - 5 + (0.114* Av)
     color = (0.282 - 0.114) * Av + 0.55
     G = K - 0.286 + 4.023 * color - 0.35 * color **2 + 0.021 * color ** 3
     return G
