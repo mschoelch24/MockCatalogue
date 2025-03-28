@@ -8,10 +8,10 @@ def main():
     t0 = time.time()
 
     simname,_ = os.path.splitext(input_file)
-    df = read_sim(input_file)[:100] ###remove for full run###
+    df = read_sim(input_file)
     print("Opening simulation",simname, "with columns", list(df),"and length", len(df))
 
-    x = np.array(df.iloc[:,0]) #change if input columns are different (e.g. x = np.array(df['col9']))
+    x = np.array(df.iloc[:,0]) #change if input columns are different
     y = np.array(df.iloc[:,1])
     z = np.array(df.iloc[:,2])
 
@@ -32,7 +32,7 @@ def main():
     print("****Starting coordinate transformation****")
 
     # Coordinate transformation: cartesian galactocentric to equatorial heliocentric:
-    ra, dec, parallax, pmra, pmdec, radial_velocity = equat_heliocen(x,y,z,vx,vy,vz)
+    ra, dec, parallax, pmra, pmdec, radial_velocity = cartesian2equatorial(x,y,z,vx,vy,vz)
 
     df['ra'] = ra
     df['dec'] = dec
@@ -42,7 +42,7 @@ def main():
     df['radial_velocity'] = radial_velocity
 
     # Coordinate transformation: cartesian galactocentric to galactic heliocentric:
-    l_input, b_input, distance, pml, pmb, vr = gal_heliocen(x,y,z,vx,vy,vz)
+    l_input, b_input, distance, pml, pmb, vr = cartesian2galactic(x,y,z,vx,vy,vz)
 
     df['l'] = l_input
     df['b'] = b_input
