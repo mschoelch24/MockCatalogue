@@ -42,7 +42,7 @@ def main():
     pmdec = np.random.normal(loc=df1['pmdec'], scale=df1['pmdec_error'])
 
     # converting back to cartesian coordinates
-    x, y, z, vx, vy, vz = equatorial2cartesian(np.radians(ra), np.radians(dec), 1/parallax, pmra, pmdec, df1['radial_velocity'])
+    x, y, z, vx, vy, vz = equatorial2cartesian(np.radians(ra), np.radians(dec), 1/parallax, pmra, pmdec, np.array(df1['radial_velocity']))
 
     dferrors = pd.DataFrame()
     dferrors['x'] = x
