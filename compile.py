@@ -4,6 +4,7 @@ import glob
 import sys
 import time
 import os
+from cat_functions import *
 
 def main():
     input_file = sys.argv[1]
