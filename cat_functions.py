@@ -9,6 +9,7 @@ from multiprocessing import Pool
 import gc
 from scipy.interpolate import RegularGridInterpolator
 from pygaia.errors.astrometric import parallax_uncertainty, proper_motion_uncertainty
+from scipy.interpolate import interp1d
 
 
 def open_fits(file):
@@ -167,7 +168,7 @@ def uncertainties(G, rls = 'dr3'):
     Output: 
         Uncertainties (in micro-arcsec) in parallax, ra, dec, proper motion ra and proper motion dec
     
-    *Note that GaiaNIR requires input file (e.g. 'GmagSig_K5IIIAv0-M5.csv', where M5 stands for the medium mission over a 5-yr baseline).
+    *Note that GaiaNIR requires input file (e.g. 'GmagSig_K5IIIAv0_M5.csv', where M5 stands for the medium mission over a 5-yr baseline).
     Parallax uncertainties are computed from a RC spectrum, using GaiaNIR simulation of Hobbs et al. (in prep). *
     """
     _t_factor = {"dr3": 1.0, "dr4": 0.749, "dr5": 0.527}
@@ -178,7 +179,7 @@ def uncertainties(G, rls = 'dr3'):
     gatefloor = np.power(10.0, 0.4 * (13.0 - 15.0))
     z = np.maximum(gatefloor, np.power(10.0, 0.4 * (G - 15.0)))
     if (rls == 'NIR'):
-        nir = pd.read_csv('GmagSig_K5IIIAv0-M5.csv')
+        nir = pd.read_csv('GmagSig_K5IIIAv0_M5.csv')
         interp_func = interp1d(nir['Gmag'], nir['sigma'], kind='linear', fill_value="extrapolate")
         plx_unc = interp_func(G) #in micro-as
     else:
