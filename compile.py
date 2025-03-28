@@ -42,7 +42,7 @@ def main():
     radial_velocity = np.array(df1['radial_velocity'])
 
     # converting back to cartesian coordinates
-    x, y, z, vx, vy, vz = equatorial2cartesian(ra, dec, 1/df1['parallax'], pmra, pmdec, radial_velocity) # disregarding error in parallax
+    x, y, z, vx, vy, vz = equatorial2cartesian(ra, dec, 1/np.array(df1['parallax']), pmra, pmdec, radial_velocity) # disregarding error in parallax
 
     dferrors = pd.DataFrame()
     dferrors['x'] = x
