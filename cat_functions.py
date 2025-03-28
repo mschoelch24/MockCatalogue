@@ -8,7 +8,6 @@ import astropy.coordinates as coord
 from multiprocessing import Pool
 import gc
 from scipy.interpolate import RegularGridInterpolator
-from pygaia.errors.astrometric import parallax_uncertainty, proper_motion_uncertainty
 from scipy.interpolate import interp1d
 
 
@@ -175,7 +174,7 @@ def magnitude(d, Av):
 
 def uncertainties(G, rls = 'dr3'):
     """
-    Importing uncertainty factors from the PyGaia package (https://github.com/agabrown/PyGaia)
+    Importing uncertainty factors from PyGaia (https://github.com/agabrown/PyGaia)
     Input:
         G - G magnitude of star (array or scalar)
     Optional: 
