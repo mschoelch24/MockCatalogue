@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import glob
 import sys
 import time
@@ -29,6 +30,28 @@ def main():
 
     df1.to_pickle(simname + '_out.pkl')
     print("Final dataframe contains columns", list(df1), "and has length", len(df1))
+
+    # drawing ra,dec from Gaussian distribution with standard deviation of uncertainty in ra, dec
+    np.random.seed(42)
+    ra = np.random.normal(loc=np.array(df1['ra']), scale=np.array(df1['ra_error']/3.6e6))
+    print("median ra: ", np.median(ra))
+    dec = np.random.normal(loc=np.array(df1['dec']), scale=np.array(df1['dec_error']/3.6e6))
+    parallax = np.random.normal(loc=np.array(df1['parallax']), scale=np.array(df1['plx_error']/3.6e6))
+    pmra = np.random.normal(loc=df1['pmra'],scale=df1['pmra_error'])
+    pmdec = np.random.normal(loc=df1['pmdec'], scale=df1['pmdec_error'])
+
+    # converting back to cartesian coordinates
+    x, y, z, vx, vy, vz = equatorial2cartesian(np.radians(ra), np.radians(dec), 1/parallax, pmra, pmdec, df1['radial_velocity'])
+
+    dferrors = pd.DataFrame()
+    dferrors['x'] = x
+    dferrors['y'] = y
+    dferrors['z'] = z
+    dferrors['vx'] = vx
+    dferrors['vy'] = vy
+    dferrors['vz'] = vz
+    dferrors.to_pickle(simname + '_mock.pkl')
+    print("Mock dataframe contains columns", list(dferrors), "and has length", len(dferrors))
 
     tf = time.time()
     t_total = tf - t0
