@@ -1,7 +1,6 @@
 #!/bin/bash
 
-input_file='Bar_ome45_short_carte.fits' #example input file, can be full path, e.g.
-#input_file='../2Project/snapshots/PMcrs0a0.9000_wo_LMC_DM.pkl'
+input_file='Bar_ome45_short_carte.fits' #example input file
 rls='dr3' #Gaia data release for uncertainties
 
 ncores='5' # input number of cores here
