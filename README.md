@@ -4,7 +4,7 @@ Generates an output of data including the Gaia observables 'source_id', 'ra', 'd
 Catalogues are adjustable for different Gaia error models and GaiaNIR assuming red clump stars (different absorption models and stellar tracers to be added).
 
 ## Files
-- `exe_mockcat.sh`: Script to run `coord_transform.py`, `observables.py`, and `compile.py` in succession. Requires an "input_file" and "ncores" edit. The keyword 'rls' for release can also be added to apply different Gaia data release uncertainties. To split a dataset into parts, "nruns" may be edited. Current file format options are *.fits*, *.pkl*, and *.csv*.
+- `exe_mockcat.sh`: Script to run `coord_transform.py`, `observables.py`, and `compile.py` in succession. Requires an "input_file" and "ncores" edit. The keyword "rls" can also be edited to apply different Gaia data release uncertainties. To split a dataset into parts, "nruns" may be edited. Current file format options are *.fits*, *.pkl*, and *.csv*.
 - `cat_functions.py`: All functions used in the catalogue tool.
 - `coord_transform.py`: Reads input simulation, converts cartesian coordinates to equatorial heliocentric and galactic heliocentric. Outputs dataframe with sim input coordinates, as well as 'source_id', 'ra', 'dec', 'parallax', 'pmra', 'pmdec', 'radial_velocity', 'l', 'b', 'd'.
 - `observables.py`: Inputs 'l', 'b', 'd' from `coord_transform.py` to compute the extinction 'Av_lm' (using the Lallement 2022 & Marshall 2006 map), Gaia G magnitude 'G', and GaiaDR3 uncertainties in parallax and proper motion: 'parallax_error', 'pmra_error', and 'pmdec_error', all in microarcseconds.
