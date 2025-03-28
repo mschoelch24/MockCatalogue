@@ -35,15 +35,14 @@ def main():
     # drawing ra,dec from Gaussian distribution with standard deviation of uncertainty in ra, dec
     np.random.seed(42)
     ra = np.random.normal(loc=np.array(df1['ra']), scale=np.array(df1['ra_error']/3.6e6))
-    print("median ra: ", np.median(ra))
     dec = np.random.normal(loc=np.array(df1['dec']), scale=np.array(df1['dec_error']/3.6e6))
-    parallax = np.random.normal(loc=np.array(df1['parallax']), scale=np.array(df1['plx_error']/3.6e6))
+    parallax = np.random.normal(loc=np.array(df1['parallax']), scale=np.array(df1['plx_error']))
     pmra = np.random.normal(loc=df1['pmra'],scale=df1['pmra_error'])
     pmdec = np.random.normal(loc=df1['pmdec'], scale=df1['pmdec_error'])
     radial_velocity = np.array(df1['radial_velocity'])
 
     # converting back to cartesian coordinates
-    x, y, z, vx, vy, vz = equatorial2cartesian(ra, dec, 1/parallax, pmra, pmdec, radial_velocity)
+    x, y, z, vx, vy, vz = equatorial2cartesian(ra, dec, 1/df1['parallax'], pmra, pmdec, radial_velocity) # disregarding error in parallax
 
     dferrors = pd.DataFrame()
     dferrors['x'] = x
