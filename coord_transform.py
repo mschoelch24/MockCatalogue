@@ -32,11 +32,11 @@ def main():
     print("****Starting coordinate transformation****")
 
     # Coordinate transformation: cartesian galactocentric to equatorial heliocentric:
-    ra, dec, parallax, pmra, pmdec, radial_velocity = cartesian2equatorial(x,y,z,vx,vy,vz)
+    ra, dec, distance, pmra, pmdec, radial_velocity = cartesian2equatorial(x,y,z,vx,vy,vz)
 
     df['ra'] = ra
     df['dec'] = dec
-    df['parallax'] = parallax
+    df['parallax'] = 1/distance
     df['pmra'] = pmra
     df['pmdec'] = pmdec
     df['radial_velocity'] = radial_velocity
