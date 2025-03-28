@@ -40,9 +40,10 @@ def main():
     parallax = np.random.normal(loc=np.array(df1['parallax']), scale=np.array(df1['plx_error']/3.6e6))
     pmra = np.random.normal(loc=df1['pmra'],scale=df1['pmra_error'])
     pmdec = np.random.normal(loc=df1['pmdec'], scale=df1['pmdec_error'])
+    radial_velocity = np.array(df1['radial_velocity'])
 
     # converting back to cartesian coordinates
-    x, y, z, vx, vy, vz = equatorial2cartesian(np.radians(ra), np.radians(dec), 1/parallax, pmra, pmdec, np.array(df1['radial_velocity']))
+    x, y, z, vx, vy, vz = equatorial2cartesian(ra, dec, 1/parallax, pmra, pmdec, radial_velocity)
 
     dferrors = pd.DataFrame()
     dferrors['x'] = x
