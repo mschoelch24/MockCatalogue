@@ -11,13 +11,13 @@ def main():
     df = read_sim(input_file)
     print("Opening simulation",simname, "with columns", list(df),"and length", len(df))
 
-    x = np.array(df.iloc[:,0]) #change if input columns are different
-    y = np.array(df.iloc[:,1])
-    z = np.array(df.iloc[:,2])
+    x = np.array(df['x']) #change if input columns are labeled differently, or use df.iloc[:,0] etc.
+    y = np.array(df['y'])
+    z = np.array(df['z'])
 
-    vx = np.array(df.iloc[:,3])
-    vy = np.array(df.iloc[:,4])
-    vz = np.array(df.iloc[:,5])
+    vx = np.array(df['vx'])
+    vy = np.array(df['vy'])
+    vz = np.array(df['vz'])
 
     source_id = range(0,len(df)) # Assigning a source id for sorting.
     df['source_id'] = source_id
