@@ -149,13 +149,35 @@ def extinction_calc(l, b, d, id_n):
         ext_d = np.nan
     return ext_d, id_n
 
+def extinction_calc_wrapper(args, counter, lock, start_time, total):
+    result = extinction_calc(*args)
+    with lock:
+        counter.value += 1
+        processed = counter.value
+        elapsed = time.time() - start_time.value
+        if processed % 100000 == 0 or processed == total:
+            avg_time = elapsed / processed
+            eta = avg_time * (total - processed)
+            print(f"{processed}/{total} stars processed - Elapsed time: {elapsed:.1f}s, Estimated time to finish: {eta:.1f}s")
+    return result
+
 def compext_parallel(l_input, b_input, distance, sid, ncores):
     inputs = list(zip(l_input, b_input, distance, sid))
-    with Pool(processes=ncores) as pool:
-        results = [pool.apply_async(extinction_calc, i) for i in inputs]
-        results = [r.get() for r in results]
+    total = len(inputs)
+
+    with Manager() as manager:
+        counter = manager.Value('i', 0)
+        lock = manager.Lock()
+        start_time = manager.Value('d', time.time())
+
+        with Pool(processes=ncores) as pool:
+            func = partial(extinction_calc_wrapper, counter=counter, lock=lock,
+                           start_time=start_time, total=total)
+            results = pool.map(func, inputs)
+
         sorted_results = sorted(results, key=lambda a_entry: a_entry[1])
         sorted_results = [item[0] for item in sorted_results]
+
     return sorted_results
 
 def magnitude(d, Av):
