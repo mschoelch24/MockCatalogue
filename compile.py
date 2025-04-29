@@ -13,12 +13,12 @@ def main():
     t0 = time.time()
     
     # coordinate.py output dataframe:
-    df1 = pd.read_pickle(simname + '_coords.pkl') 
+    df1 = pd.read_pickle(simname + '_coords.pkl',compression='zip') 
 
     # adding all the observables from df fragments:
     fragmt_list = sorted(glob.glob('*observ_out_pt*.pkl'))
 
-    df2 = pd.read_pickle(fragmt_list[0])
+    df2 = pd.read_pickle(fragmt_list[0],compression='zip')
     for fragmt in fragmt_list[1:]:
         dfn = pd.read_pickle(fragmt)
         df2 = pd.concat([df2, dfn], ignore_index=True)
@@ -29,7 +29,7 @@ def main():
         "Dataframes cannot be merged due to different lengths."
         pass
 
-    df1.to_pickle(simname + '_out.pkl')
+    df1.to_pickle(simname + '_out.pkl',compression='zip')
     print("Final dataframe contains columns", list(df1), "and has length", len(df1))
 
     # drawing ra,dec,parallax,pmra, and pmdec from Gaussian distribution with standard deviation of the respective uncertainties
@@ -54,7 +54,7 @@ def main():
     dferrors['vx'] = vx
     dferrors['vy'] = vy
     dferrors['vz'] = vz
-    dferrors.to_pickle(simname + '_mock.pkl')
+    dferrors.to_pickle(simname + '_mock.pkl',compression='zip')
     print("Mock dataframe contains columns", list(dferrors), "and has length", len(dferrors))
 
     tf = time.time()
