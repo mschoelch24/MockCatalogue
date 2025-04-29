@@ -13,7 +13,7 @@ def main():
     input_df = simname + '_coords.pkl'
 
     t0 = time.time()
-    df = pd.read_pickle(input_df)
+    df = pd.read_pickle(input_df,compression='zip')
     
     # set limits of sources to process in this run:
     s_tot = len(df)
@@ -21,7 +21,7 @@ def main():
     s_f = n * (s_tot//nruns) - 1
 
     # apply limits to the dataframe:
-    df = pd.read_pickle(input_df)[s_i:s_f+1]
+    df = pd.read_pickle(input_df,compression='zip')[s_i:s_f+1]
     print("Processing stars", s_i, "to", s_f, "in run", n , "/", nruns)
 
     source_id = range(s_i, s_f+1) # Assigning a source id for sorting.
@@ -58,7 +58,7 @@ def main():
     dfobs['pmra_error'] = pmra_error/1000 #mas/yr
     dfobs['pmdec_error'] = pmdec_error/1000
 
-    dfobs.to_pickle(simname + '_observ_out_pt'+ str(n) +'.pkl')
+    dfobs.to_pickle(simname + '_observ_out_pt'+ str(n) +'.pkl',compression='zip')
     print("Observables dataframe no.", n ,"contains columns", list(dfobs), "and has length", len(dfobs))
 
     t4 = time.time()
