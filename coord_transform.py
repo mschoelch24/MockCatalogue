@@ -49,7 +49,7 @@ def main():
     df['d'] = distance
 
     print("Coordinate transformations complete, save df.")
-    df.to_pickle(simname + "_coords.pkl")
+    df.to_pickle(simname + '_coords.pkl',compression='zip')
 
     """
     del x, y, z, vx, vy, vz, ra, dec, parallax, pmra, pmdec, radial_velocity, pml, pmb
