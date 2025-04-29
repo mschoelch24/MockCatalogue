@@ -5,10 +5,12 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 import astropy.coordinates as coord
-from multiprocessing import Pool
+from multiprocessing import Pool, Manager, Value, Lock
 import gc
 from scipy.interpolate import RegularGridInterpolator
 from scipy.interpolate import interp1d
+from functools import partial
+import time
 
 
 def open_fits(file):
