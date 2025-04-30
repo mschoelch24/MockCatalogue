@@ -45,7 +45,19 @@ def cartesian2galactic(x,y,z,vx,vy,vz):
   return hc.l.degree, hc.b.degree, hc.distance.kpc, hc.pm_l_cosb.value, hc.pm_b.value, hc.radial_velocity.value #*u.s/u.km
 
 def equatorial2cartesian(ra, dec, distance, pmra, pmdec, vr):
-  hc = coord.SkyCoord(ra*u.degree, dec*u.degree, distance*u.kpc, pm_ra_cosdec = pmra *u.mas/u.yr, pm_dec = pmdec *u.mas/u.yr, radial_velocity = vr*u.km/u.s, frame='icrs')
+  neg_d = distance < 0
+  ra_neg_d = (ra[neg_d] + 180) % 360
+  dec_neg_d = -dec[neg_d]
+  distance_neg_d = -distance[neg_d]
+
+  ra2 = np.copy(ra)
+  dec2 = np.copy(dec)
+  dist2 = np.copy(distance)
+  ra2[neg_d] = ra_neg_d
+  dec2[neg_d] = dec_neg_d
+  dist2[neg_d] = distance_neg_d
+    
+  hc = coord.SkyCoord(ra2*u.degree, dec2*u.degree, dist2*u.kpc, pm_ra_cosdec = pmra *u.mas/u.yr, pm_dec = pmdec *u.mas/u.yr, radial_velocity = vr*u.km/u.s, frame='icrs')
   gc = hc.transform_to(coord.Galactocentric) #(galcen_distance=1*u.kpc))
   return gc.x.value, gc.y.value, gc.z.value, gc.v_x.value, gc.v_y.value, gc.v_z.value
 
@@ -117,7 +129,7 @@ def extinction_calc(l, b, d, id_n):
         ext_row[0]= np.nan
         difference_array = np.absolute(ext_row - d)
 
-        # find column index = index of minimum element of difference array... NOT NAN!!
+        # find column index = index of minimum element of difference array...
         col_index = column_indices[np.nanargmin(difference_array)] # -2 to reproduce the java code
         if col_index >= 266:
             col_index = 264
@@ -157,29 +169,31 @@ def extinction_calc_wrapper(args, counter, lock, start_time, total):
         counter.value += 1
         processed = counter.value
         elapsed = time.time() - start_time.value
-        if processed % 100000 == 0 or processed == total:
-            avg_time = elapsed / processed
-            eta = avg_time * (total - processed)
-            print(f"{processed}/{total} stars processed - Elapsed time: {elapsed:.1f}s, Estimated time to finish: {eta:.1f}s")
+        elapsed_str = f"{elapsed / 60:.1f} min" if elapsed >= 60 else f"{elapsed:.1f} sec"
+        if processed in {1000, 10000} or processed % 100000 == 0 or processed == total:
+            if processed < 300000:
+                eta_str = "calculating..."
+            else:
+                avg_time = elapsed / processed
+                eta = avg_time * (total - processed)
+                eta_str = f"{eta / 60:.1f} min" if eta >= 60 else f"{eta:.1f} sec"
+            print(f"{processed}/{total} stars processed - Elapsed time: {elapsed_str}, Estimated time to finish: {eta_str}")
     return result
 
 def compext_parallel(l_input, b_input, distance, sid, ncores):
     inputs = list(zip(l_input, b_input, distance, sid))
     total = len(inputs)
-
     with Manager() as manager:
         counter = manager.Value('i', 0)
         lock = manager.Lock()
         start_time = manager.Value('d', time.time())
-
+        
         with Pool(processes=ncores) as pool:
             func = partial(extinction_calc_wrapper, counter=counter, lock=lock,
                            start_time=start_time, total=total)
             results = pool.map(func, inputs)
-
         sorted_results = sorted(results, key=lambda a_entry: a_entry[1])
         sorted_results = [item[0] for item in sorted_results]
-
     return sorted_results
 
 def magnitude(d, Av):
