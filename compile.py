@@ -16,7 +16,7 @@ def main():
     df1 = pd.read_pickle(simname + '_coords.pkl',compression='zip') 
 
     # adding all the observables from df fragments:
-    fragmt_list = sorted(glob.glob('*observ_out_pt*.pkl'))
+    fragmt_list = sorted(glob.glob(simname + '_observ_out_pt*.pkl'))
 
     df2 = pd.read_pickle(fragmt_list[0],compression='zip')
     for fragmt in fragmt_list[1:]:
