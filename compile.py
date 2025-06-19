@@ -13,7 +13,7 @@ def main():
     t0 = time.time()
     
     # coordinate.py output dataframe:
-    df1 = pd.read_pickle(simname + '_coords.pkl',compression='zip') 
+    df = pd.read_pickle(simname + '_coords.pkl',compression='zip') 
 
     # adding all the observables from df fragments:
     fragmt_list = sorted(glob.glob(simname + '_observ_out_pt*.pkl'))
@@ -24,13 +24,10 @@ def main():
         df2 = pd.concat([df2, dfn], ignore_index=True)
 
     if len(df2) == len(df1):
-        df1 = df1.merge(df2, how = 'inner', on='source_id')
+        df = df.merge(df2, how = 'inner', on='source_id')
     else:
         "Dataframes cannot be merged due to different lengths."
         pass
-
-    df1.to_pickle(simname + '_out.pkl',compression='zip')
-    print("Final dataframe contains columns", list(df1), "and has length", len(df1))
 
     # drawing ra,dec,parallax,pmra, and pmdec from Gaussian distribution with standard deviation of the respective uncertainties
     np.random.seed(42)
