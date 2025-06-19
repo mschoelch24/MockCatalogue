@@ -45,19 +45,7 @@ def cartesian2galactic(x,y,z,vx,vy,vz):
   return hc.l.degree, hc.b.degree, hc.distance.kpc, hc.pm_l_cosb.value, hc.pm_b.value, hc.radial_velocity.value #*u.s/u.km
 
 def equatorial2cartesian(ra, dec, distance, pmra, pmdec, vr):
-  neg_d = distance < 0
-  ra_neg_d = (ra[neg_d] + 180) % 360
-  dec_neg_d = -dec[neg_d]
-  distance_neg_d = -distance[neg_d]
-
-  ra2 = np.copy(ra)
-  dec2 = np.copy(dec)
-  dist2 = np.copy(distance)
-  ra2[neg_d] = ra_neg_d
-  dec2[neg_d] = dec_neg_d
-  dist2[neg_d] = distance_neg_d
-    
-  hc = coord.SkyCoord(ra2*u.degree, dec2*u.degree, dist2*u.kpc, pm_ra_cosdec = pmra *u.mas/u.yr, pm_dec = pmdec *u.mas/u.yr, radial_velocity = vr*u.km/u.s, frame='icrs')
+  hc = coord.SkyCoord(ra*u.degree, dec*u.degree, distance*u.kpc, pm_ra_cosdec = pmra *u.mas/u.yr, pm_dec = pmdec *u.mas/u.yr, radial_velocity = vr*u.km/u.s, frame='icrs')
   gc = hc.transform_to(coord.Galactocentric) #(galcen_distance=1*u.kpc))
   return gc.x.value, gc.y.value, gc.z.value, gc.v_x.value, gc.v_y.value, gc.v_z.value
 
@@ -242,3 +230,7 @@ def uncertainties(G, rls = 'dr3'):
     pmra_unc = plx_unc * pm_alpha_factor[rls]
     pmdec_unc = plx_unc * pm_delta_factor[rls]
     return plx_unc, ra_unc, dec_unc, pmra_unc, pmdec_unc
+
+# conversion of parallax to distance, Weiler+25 (https://arxiv.org/abs/2505.16588)
+def Weiler_C(x,p):
+    return math.sqrt(2.) * scp.erfinv( 1. - p * ( 1. + scp.erf( x / math.sqrt(2.)) ) )
