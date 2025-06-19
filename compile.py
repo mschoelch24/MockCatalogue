@@ -41,11 +41,20 @@ def main():
     pmdec = np.random.normal(loc=df1['pmdec'], scale=df1['pmdec_error'])
     radial_velocity = np.array(df1['radial_velocity'])
 
-    # removing unphysical negative distances
-    #parallax = np.where(parallax >= 0, parallax, np.nan) 
+    # update dataframe to include uncertainties
+    df['ra'] = ra
+    df['dec'] = dec
+    df['parallax'] = parallax
+    df['pmra'] = pmra
+    df['pmdec'] = pmdec
+    df['radial_velocity'] = radial_velocity
+
+    # compute distance using Weiler+25
+    df['R']= 1. / (df['parallax'] + df['plx_error'] * Weiler_C(df['parallax']/df['plx_error'],0.5) )
+    distance = np.array(df['R'])
     
     # converting back to cartesian coordinates
-    x, y, z, vx, vy, vz = equatorial2cartesian(ra, dec, 1/parallax, pmra, pmdec, radial_velocity)
+    x, y, z, vx, vy, vz = equatorial2cartesian(ra, dec, distance, pmra, pmdec, radial_velocity)
 
     dferrors = pd.DataFrame()
     dferrors['x'] = x
