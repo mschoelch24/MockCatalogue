@@ -53,15 +53,15 @@ def main():
     # converting back to cartesian coordinates
     x, y, z, vx, vy, vz = equatorial2cartesian(ra, dec, distance, pmra, pmdec, radial_velocity)
 
-    dferrors = pd.DataFrame()
-    dferrors['x'] = x
-    dferrors['y'] = y
-    dferrors['z'] = z
-    dferrors['vx'] = vx
-    dferrors['vy'] = vy
-    dferrors['vz'] = vz
-    dferrors.to_pickle(simname + '_mock.pkl',compression='zip')
-    print("Mock dataframe contains columns", list(dferrors), "and has length", len(dferrors))
+    df['X'] = x
+    df['Y'] = y
+    df['Z'] = z
+    df['Vx'] = vx
+    df['Vy'] = vy
+    df['Vz'] = vz
+
+    df.to_pickle(simname + '_mock.pkl',compression='zip')
+    print("Mock dataframe contains columns", list(df), "and has length", len(df))
 
     tf = time.time()
     t_total = tf - t0
