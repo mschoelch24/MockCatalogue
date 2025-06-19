@@ -23,7 +23,7 @@ def main():
         dfn = pd.read_pickle(fragmt)
         df2 = pd.concat([df2, dfn], ignore_index=True)
 
-    if len(df2) == len(df1):
+    if len(df2) == len(df):
         df = df.merge(df2, how = 'inner', on='source_id')
     else:
         "Dataframes cannot be merged due to different lengths."
@@ -31,12 +31,12 @@ def main():
 
     # drawing ra,dec,parallax,pmra, and pmdec from Gaussian distribution with standard deviation of the respective uncertainties
     np.random.seed(42)
-    ra = np.random.normal(loc=np.array(df1['ra']), scale=np.array(df1['ra_error']/3.6e6)) #converting uncertainty from mas to degrees
-    dec = np.random.normal(loc=np.array(df1['dec']), scale=np.array(df1['dec_error']/3.6e6))
-    parallax = np.random.normal(loc=np.array(df1['parallax']), scale=np.array(df1['plx_error'])) #parallax and parallax uncertainty in mas
-    pmra = np.random.normal(loc=df1['pmra'],scale=df1['pmra_error'])
-    pmdec = np.random.normal(loc=df1['pmdec'], scale=df1['pmdec_error'])
-    radial_velocity = np.array(df1['radial_velocity'])
+    ra = np.random.normal(loc=np.array(df['ra']), scale=np.array(df['ra_error']/3.6e6)) #converting uncertainty from mas to degrees
+    dec = np.random.normal(loc=np.array(df['dec']), scale=np.array(df['dec_error']/3.6e6))
+    parallax = np.random.normal(loc=np.array(df['parallax']), scale=np.array(df['plx_error'])) #parallax and parallax uncertainty in mas
+    pmra = np.random.normal(loc=df['pmra'],scale=df['pmra_error'])
+    pmdec = np.random.normal(loc=df['pmdec'], scale=df['pmdec_error'])
+    radial_velocity = np.array(df['radial_velocity'])
 
     # update dataframe to include uncertainties
     df['ra'] = ra
