@@ -2,6 +2,7 @@ import os.path
 import pandas as pd
 from astropy.io import fits
 import numpy as np
+import math
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 import astropy.coordinates as coord
@@ -11,6 +12,7 @@ from scipy.interpolate import RegularGridInterpolator
 from scipy.interpolate import interp1d
 from functools import partial
 import time
+import scipy.special as scp
 
 
 def open_fits(file):
