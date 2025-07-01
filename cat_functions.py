@@ -188,10 +188,11 @@ def compext_parallel(l_input, b_input, distance, sid, ncores):
 
 def magnitude(d, Av):
     """
-    Calculating the G magnitude of stars from apparent K magnitude and color.
+    Calculating the G magnitude of stars from apparent K magnitude and color. 
+    We assign Red Clump stellar parameters, i.e. absolute magnitude Mk = -1.62 and intrinsic colour (J-K)0 = 0.55, and use the extinction relations Ak = 0.114*Av and Aj = 0.282*Av.
     Input:
         d - heliocentric distance of the star in parsec
-        Av - extinction
+        Av - extinction in V band
     Output: 
         G - in mag
     """
