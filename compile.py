@@ -38,14 +38,6 @@ def main():
     pmdec = np.random.normal(loc=df['pmdec'], scale=df['pmdec_error'])
     radial_velocity = np.array(df['radial_velocity'])
 
-    # update dataframe to include uncertainties
-    df['ra'] = ra
-    df['dec'] = dec
-    df['parallax'] = parallax
-    df['pmra'] = pmra
-    df['pmdec'] = pmdec
-    df['radial_velocity'] = radial_velocity
-
     # compute parallax error from RGB uncertainties:
     rel_uncert_samples = np.load("kde_rel_uncert_samples.npy")
     sampled_rel_uncert = np.random.choice(rel_uncert_samples, size=len(df), replace=True)
@@ -54,6 +46,14 @@ def main():
     
     plx_samples = np.random.normal(loc=df['parallax'],scale=sampled_error)
     df['parallax_RGB'] = plx_samples
+
+    # update dataframe to include uncertainties
+    df['ra'] = ra
+    df['dec'] = dec
+    df['parallax'] = parallax
+    df['pmra'] = pmra
+    df['pmdec'] = pmdec
+    df['radial_velocity'] = radial_velocity
 
     # compute distance using Weiler+25
     df['R']= 1. / (df['parallax'] + df['plx_error'] * Weiler_C(df['parallax']/df['plx_error'],0.5) )
