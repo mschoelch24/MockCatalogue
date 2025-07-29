@@ -46,9 +46,19 @@ def main():
     df['pmdec'] = pmdec
     df['radial_velocity'] = radial_velocity
 
+    # compute parallax error from RGB uncertainties:
+    rel_uncert_samples = np.load("kde_rel_uncert_samples.npy")
+    sampled_rel_uncert = np.random.choice(rel_uncert_samples, size=len(df), replace=True)
+    sampled_error = sampled_rel_uncert * df['parallax']
+    df['plx_error_RGB'] = sampled_error
+    
+    plx_samples = np.random.normal(loc=df['parallax'],scale=sampled_error)
+    df['parallax_RGB'] = plx_samples
+
     # compute distance using Weiler+25
     df['R']= 1. / (df['parallax'] + df['plx_error'] * Weiler_C(df['parallax']/df['plx_error'],0.5) )
-    distance = np.array(df['R'])
+    df['R_RGB']= 1. / (df['parallax_RGB'] + df['plx_error_RGB'] * Weiler_C(df['parallax_RGB']/df['plx_error_RGB'],0.5) )
+    distance = np.array(df['R_RGB'])
     
     # converting back to cartesian coordinates
     x, y, z, vx, vy, vz = equatorial2cartesian(ra, dec, distance, pmra, pmdec, radial_velocity)
