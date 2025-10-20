@@ -2,6 +2,7 @@
 
 input_file='Bar_ome45_short_carte.fits' #example input file
 rls='dr3' #Gaia data release for uncertainties
+tracer='RC'
 
 ncores='5' # input number of cores here
 nruns='1' # input number of runs of observables.py
@@ -20,7 +21,7 @@ N=$nruns
 for ((i=1; i<=N; i++))
 do
         echo "Executing iteration $i of observables.py"
-        python3 observables.py "$input_file" "$ncores" "$nruns" "$rls" $i
+        python3 observables.py "$input_file" "$ncores" "$nruns" "$rls" "$tracer" $i
 done
 
 # compiling the separate dataframes from each iteration of observables.py and merging with the dataframe from coord_transform.py 

@@ -7,7 +7,8 @@ def main():
     ncores = sys.argv[2]
     nruns = int(sys.argv[3])
     rls = sys.argv[4]
-    n = int(sys.argv[5])
+    tracer = sys.argv[5]
+    n = int(sys.argv[6])
 
     simname,_ = os.path.splitext(input_file)
     input_df = simname + '_coords.pkl'
@@ -41,8 +42,11 @@ def main():
 
     
     print("****Starting G mag calculation****")
-    G = magnitude(np.array(df['d']), np.array(dfobs['Av_lm']))
-    #print("G mag min, max, median:", np.min(G), np.max(G), np.nanmedian(G))
+    if tracer == 'RGB':
+        G = magnitude_RGB(np.array(df['d']), np.array(dfobs['Av_lm']))
+        #print("G mag min, max, median:", np.min(G), np.max(G), np.nanmedian(G))
+    else: 
+        G = magnitude(np.array(df['d']), np.array(dfobs['Av_lm']))
     dfobs['G'] = G
 
     t3 = time.time()

@@ -207,6 +207,23 @@ def magnitude(d, Av):
     G = K - 0.286 + 4.023 * color - 0.35 * color **2 + 0.021 * color ** 3
     return G
 
+def magnitude_RGB(d, Av):
+    """
+    Calculating the G magnitude from RGB stellar parameters, i.e. drawing intrinsic color and absolute magnitude from RGB distribution and converting to apparent G magnitude using the star's distance and the extinction conversion Ag/Av (J.M.Carassco).
+    Input: 
+        d - heliocentric distance of the star in parsec
+        Av - extinction in V band
+    Output: 
+        G - in mag
+    """
+    color_mag_samples = np.load("kde_color_mag_samples.npz")
+    sampled_colors = np.random.choice(color_mag_samples["color"], size=len(d), replace=True)
+    sampled_magnitudes = np.random.choice(color_mag_samples["magnitude"], size=len(d), replace=True)
+    
+    Ag = 0.98703 - 0.14452 * sampled_colors + 0.01126 * sampled_colors + 0.03313 * Av - 0.00389 * sampled_colors * Av
+    G = sampled_magnitudes + 5 * np.log10(d*1e3) - 5 + Ag
+    return G
+
 def uncertainties(G, rls = 'dr3'):
     """
     Importing uncertainty factors from PyGaia (https://github.com/agabrown/PyGaia)
