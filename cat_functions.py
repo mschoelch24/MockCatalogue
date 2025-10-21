@@ -244,17 +244,17 @@ def uncertainties(G, rls = 'dr3'):
     pm_delta_factor = {"dr3": 0.89, "dr4": 0.50, "dr5": 0.25, "NIR":0.25}
     gatefloor = np.power(10.0, 0.4 * (13.0 - 15.0))
     z = np.maximum(gatefloor, np.power(10.0, 0.4 * (G - 15.0)))
-    if (rls == 'NIR'):
-        nir = pd.read_csv('GmagSig_K5IIIAv0_M5.csv')
+    if (rls[:3] == 'NIR'):
+        nir = pd.read_csv('GmagSig_K5IIIAv0_'+rls[4:]+'.csv')
         interp_func = interp1d(nir['Gmag'], nir['sigma'], kind='linear', fill_value="extrapolate")
         plx_unc = interp_func(G) #in micro-as
     else:
         plx_unc = np.sqrt(40 + 800 * z + 30 * z * z) * _t_factor[rls]
 
-    ra_unc = plx_unc * pos_alpha_factor[rls]
-    dec_unc = plx_unc * pos_delta_factor[rls]
-    pmra_unc = plx_unc * pm_alpha_factor[rls]
-    pmdec_unc = plx_unc * pm_delta_factor[rls]
+    ra_unc = plx_unc * pos_alpha_factor[rls[:3]]
+    dec_unc = plx_unc * pos_delta_factor[rls[:3]]
+    pmra_unc = plx_unc * pm_alpha_factor[rls[:3]]
+    pmdec_unc = plx_unc * pm_delta_factor[rls[:3]]
     return plx_unc, ra_unc, dec_unc, pmra_unc, pmdec_unc
 
 # conversion of parallax to distance, Weiler+25 (https://arxiv.org/abs/2505.16588)

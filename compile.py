@@ -8,6 +8,8 @@ from cat_functions import *
 
 def main():
     input_file = sys.argv[1]
+    tracer = sys.argv[2]
+    rls = sys.argv[3]
     simname,_ = os.path.splitext(input_file)
     
     t0 = time.time()
@@ -70,7 +72,7 @@ def main():
     df['Vy'] = vy
     df['Vz'] = vz
 
-    df.to_pickle(simname + '_mock.pkl',compression='zip')
+    df.to_pickle(simname+ '_mock_'+ tracer+ rls+'.pkl',compression='zip')
     print("Mock dataframe contains columns", list(df), "and has length", len(df))
 
     tf = time.time()

@@ -6,8 +6,8 @@ def main():
     input_file = sys.argv[1]
     ncores = sys.argv[2]
     nruns = int(sys.argv[3])
-    rls = sys.argv[4]
-    tracer = sys.argv[5]
+    tracer = sys.argv[4]
+    rls = sys.argv[5]
     n = int(sys.argv[6])
 
     simname,_ = os.path.splitext(input_file)
