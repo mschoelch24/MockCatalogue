@@ -9,6 +9,7 @@ nruns='1' # input number of runs of observables.py
 
 echo "input_file: $input_file"
 echo "ncores: $ncores"
+echo "rls: $rls"
 
 start=$(date +%s)
 

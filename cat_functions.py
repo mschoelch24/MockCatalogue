@@ -47,9 +47,17 @@ def cartesian2galactic(x,y,z,vx,vy,vz):
   return hc.l.degree, hc.b.degree, hc.distance.kpc, hc.pm_l_cosb.value, hc.pm_b.value, hc.radial_velocity.value #*u.s/u.km
 
 def equatorial2cartesian(ra, dec, distance, pmra, pmdec, vr):
-  hc = coord.SkyCoord(ra*u.degree, dec*u.degree, distance*u.kpc, pm_ra_cosdec = pmra *u.mas/u.yr, pm_dec = pmdec *u.mas/u.yr, radial_velocity = vr*u.km/u.s, frame='icrs')
+  mask = (dec > -90) & (dec < 90) & (ra >= 0) & (ra < 360)
+  hc = coord.SkyCoord(ra[mask]*u.degree, dec[mask]*u.degree, distance[mask]*u.kpc,
+                      pm_ra_cosdec = pmra[mask] *u.mas/u.yr, pm_dec = pmdec[mask] *u.mas/u.yr, radial_velocity = vr[mask]*u.km/u.s, frame='icrs')
   gc = hc.transform_to(coord.Galactocentric) #(galcen_distance=1*u.kpc))
-  return gc.x.value, gc.y.value, gc.z.value, gc.v_x.value, gc.v_y.value, gc.v_z.value
+  components = (gc.x, gc.y, gc.z, gc.v_x, gc.v_y, gc.v_z)
+  output = []
+  for comp in components:
+    arr = np.full_like(ra, np.nan)
+    arr[mask] = comp.value
+    output.append(arr)
+  return tuple(output)
 
 def equatorial2galactic(ra, dec, distance, pmra, pmdec, vr):
   hc = coord.SkyCoord(ra*u.degree, dec*u.degree, distance*u.kpc, pm_ra_cosdec = pmra *u.mas/u.yr, pm_dec = pmdec *u.mas/u.yr, radial_velocity = vr*u.km/u.s, frame='icrs')
@@ -209,7 +217,7 @@ def magnitude(d, Av):
 
 def magnitude_RGB(d, Av):
     """
-    Calculating the G magnitude from RGB stellar parameters, i.e. drawing intrinsic color and absolute magnitude from RGB distribution and converting to apparent G magnitude using the star's distance and the extinction conversion Ag/Av (Ramos et al. 2020 and J.M.Carassco, private communication).
+    Calculating the G magnitude from RGB stellar parameters, i.e. drawing observed color and absolute magnitude from RGB distribution ('kde_color_mag_samples.npz') and converting to apparent G magnitude using the star's distance and the extinction conversion Ag/Av (Ramos et al. 2020 and J.M.Carassco, private communication).
     Input: 
         d - heliocentric distance of the star in parsec
         Av - extinction in V band

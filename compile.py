@@ -72,7 +72,7 @@ def main():
     df['Vy'] = vy
     df['Vz'] = vz
 
-    df.to_pickle(simname+ '_mock_'+ tracer+ rls+'.pkl',compression='zip')
+    df.to_pickle(simname+ '_mock_'+ tracer+ '_'+ rls+'.pkl',compression='zip')
     print("Mock dataframe contains columns", list(df), "and has length", len(df))
 
     tf = time.time()
