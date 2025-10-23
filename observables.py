@@ -44,11 +44,11 @@ def main():
     print("****Starting G mag calculation****")
     if tracer == 'RGB':
         G, bp_rp = magnitude_RGB(np.array(df['d']), np.array(dfobs['Av_lm']))
+        dfobs['bp_rp'] = bp_rp
         #print("G mag min, max, median:", np.min(G), np.max(G), np.nanmedian(G))
     else: 
         G = magnitude(np.array(df['d']), np.array(dfobs['Av_lm']))
     dfobs['G'] = G
-    dfobs['bp_rp']
 
     t3 = time.time()
     t_Gmag = t3 - t2
