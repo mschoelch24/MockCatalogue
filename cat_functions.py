@@ -97,7 +97,7 @@ df2 = pd.DataFrame(datContent, dtype = float)
 df2.rename(columns={0: 'l', 1: 'b'}, inplace=True)
 df2.rename(columns={x:y for x,y in zip(df2.columns,range(0,(len(df2.columns))))})
 
-def extinction_calc(l, b, d, id_n):
+def extinction_lm(l, b, d, id_n):
     try:
         # index where source l, b match grid latitude and longitude
         l_index = np.floor(l)
@@ -171,7 +171,7 @@ def extinction_calc(l, b, d, id_n):
     return ext_d, id_n
 
 def extinction_calc_wrapper(args, counter, lock, start_time, total):
-    result = extinction_calc(*args)
+    result = extinction_lm(*args)
     with lock:
         counter.value += 1
         processed = counter.value
