@@ -8,7 +8,8 @@ def main():
     nruns = int(sys.argv[3])
     tracer = sys.argv[4]
     rls = sys.argv[5]
-    n = int(sys.argv[6])
+    extinction = sys.argv[6]
+    n = int(sys.argv[7])
 
     simname,_ = os.path.splitext(input_file)
     input_df = simname + '_coords.pkl'
@@ -33,8 +34,15 @@ def main():
 
     t1 = time.time()
     print("****Starting extinction calculation****")
-    extarray = compext_parallel(df['l'],df['b'],df['d'],df['source_id'], int(ncores))
-    dfobs['Av_lm'] = np.array(extarray)
+
+    if extinction == 'gz':
+        print("Using Green-Zucker extinction map.")
+        from extinction_functions import extinction_gz
+        extarray = extinction_gz(df['l'],df['b'],df['d'])#, df['source_id'], int(ncores))
+    else:
+        print("Using default Lallement-Marshall extinction map.")
+        extarray = compext_parallel(df['l'],df['b'],df['d'],df['source_id'], int(ncores))
+    dfobs['Av'] = np.array(extarray)
 
     t2 = time.time()
     t_ext = t2 - t1
@@ -43,11 +51,11 @@ def main():
     
     print("****Starting G mag calculation****")
     if tracer == 'RGB':
-        G, bp_rp = magnitude_RGB(np.array(df['d']), np.array(dfobs['Av_lm']))
+        G, bp_rp = magnitude_RGB(np.array(df['d']), np.array(dfobs['Av']))
         dfobs['bp_rp'] = bp_rp
         #print("G mag min, max, median:", np.min(G), np.max(G), np.nanmedian(G))
     else: 
-        G = magnitude(np.array(df['d']), np.array(dfobs['Av_lm']))
+        G = magnitude(np.array(df['d']), np.array(dfobs['Av']))
     dfobs['G'] = G
 
     t3 = time.time()
