@@ -38,7 +38,7 @@ def main():
     parallax = np.random.normal(loc=np.array(df['parallax']), scale=np.array(df['plx_error'])) #parallax and parallax uncertainty in mas
     pmra = np.random.normal(loc=df['pmra'],scale=df['pmra_error'])
     pmdec = np.random.normal(loc=df['pmdec'], scale=df['pmdec_error'])
-    radial_velocity = np.array(df['radial_velocity'])
+    radial_velocity = np.random.normal(loc=df['radial_velocity'], scale=df['radial_velocity_error'])
 
     # compute parallax error from RGB uncertainties:
     rel_uncert_samples = np.load("kde_rel_uncert_samples.npy")

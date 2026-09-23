@@ -216,7 +216,8 @@ def magnitude(d, Av):
     K = -1.62 + 5 * np.log10(d*1e3) - 5 + (0.114* Av)
     color = (0.282 - 0.114) * Av + 0.55
     G = K - 0.286 + 4.023 * color - 0.35 * color **2 + 0.021 * color ** 3
-    return G
+    bp_rp = np.random.choice(color_mag_samples["color"], size=len(d), replace=True)
+    return G, bp_rp
 
 def magnitude_RGB(d, Av):
     """
@@ -235,7 +236,7 @@ def magnitude_RGB(d, Av):
     G = abs_magnitude + 5 * np.log10(d*1e3) - 5 + Ag
     return G, bp_rp
 
-def uncertainties(G, rls = 'dr3'):
+def uncertainties(G, bp_rp, rls = 'dr3'):
     """
     Importing uncertainty factors from PyGaia (https://github.com/agabrown/PyGaia)
     Input:
@@ -266,7 +267,47 @@ def uncertainties(G, rls = 'dr3'):
     dec_unc = plx_unc * pos_delta_factor[rls[:3]]
     pmra_unc = plx_unc * pm_alpha_factor[rls[:3]]
     pmdec_unc = plx_unc * pm_delta_factor[rls[:3]]
-    return plx_unc, ra_unc, dec_unc, pmra_unc, pmdec_unc
+
+    #line-of-sight uncertainties:
+    grvs_mag = G +2.82382 * np.exp(-0.489827 * bp_rp) - 2.50644 #relation from Sartoretti+23
+    if (rls == 'dr3'):
+        #all values for g3 giant, from https://www.cosmos.esa.int/web/gaia/science-performance#astrometric%20performance
+        a = 1.00 #1/mag
+        b = 6.0 #km/s
+        sig_floor = 0.12 #km/s
+        G_RVS0 = 14.0 #mag
+
+        color_mag_samples = np.load("kde_color_mag_samples.npz")
+        bp_rp = np.random.choice(color_mag_samples["color"], size=len(G), replace=True)
+
+        grvs_mag = G +2.82382 * np.exp(-0.489827 * bp_rp) - 2.50644 #relation from Sartoretti+23
+        radial_vel_unc = sig_floor + b * np.exp(a * (grvs_mag - G_RVS0)) #in km/s
+
+    elif rls in ('dr4', 'dr5', 'NIR'):
+        rv_nb_transits = 32 if rls == 'dr4' else 64
+
+        S = 10**((21.317-grvs_mag)/2.5) * rv_nb_transits * 4.4167032 * 3 * (0.02453/24.0)
+        bck = 4.7 * 3 * rv_nb_transits * 10
+        rn = np.where(grvs_mag <= 7,
+                      (3.2)**2 * 3 * rv_nb_transits * 10,
+                      (3.2)**2 * 3 * rv_nb_transits * 1)
+        snr = S / np.sqrt(S + bck + rn)
+
+        #for g3 giants:
+        f = -1.06
+        sig_floor = 0.12
+        sig_break = 0.29
+        snr_break = 60.0
+        g = -4.20
+        k = 20.0
+
+        sig_low_SNR = sig_break * (snr/snr_break)**f
+        sig_high_SNR = sig_floor + (sig_break - sig_floor) * np.exp(g * (np.log10(snr)- np.log10(snr_break)))
+        
+        h = (1 + np.tanh(k * (np.log10(snr) - np.log10(snr_break))))/2
+        radial_vel_unc = h * sig_high_SNR + (1 - h) * sig_low_SNR #in km/s
+
+    return plx_unc, ra_unc, dec_unc, pmra_unc, pmdec_unc, radial_vel_unc
 
 # conversion of parallax to distance, Weiler+25 (https://arxiv.org/abs/2505.16588)
 def Weiler_C(x,p):

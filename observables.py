@@ -52,11 +52,11 @@ def main():
     print("****Starting G mag calculation****")
     if tracer == 'RGB':
         G, bp_rp = magnitude_RGB(np.array(df['d']), np.array(dfobs['Av']))
-        dfobs['bp_rp'] = bp_rp
         #print("G mag min, max, median:", np.min(G), np.max(G), np.nanmedian(G))
     else: 
-        G = magnitude(np.array(df['d']), np.array(dfobs['Av']))
+        G, bp_rp = magnitude(np.array(df['d']), np.array(dfobs['Av']))
     dfobs['G'] = G
+    dfobs['bp_rp'] = bp_rp
 
     t3 = time.time()
     t_Gmag = t3 - t2
@@ -70,6 +70,7 @@ def main():
     dfobs['dec_error'] = dec_error/1000
     dfobs['pmra_error'] = pmra_error/1000 #mas/yr
     dfobs['pmdec_error'] = pmdec_error/1000
+    dfobs['radial_velocity_error'] = radial_velocity_error #in km/s
 
     dfobs.to_pickle(simname + '_observ_out_pt'+ str(n) +'.pkl',compression='zip')
     print("Observables dataframe no.", n ,"contains columns", list(dfobs), "and has length", len(dfobs))
