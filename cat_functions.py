@@ -283,7 +283,11 @@ def uncertainties(G, bp_rp, rls = 'dr3'):
         grvs_mag = G +2.82382 * np.exp(-0.489827 * bp_rp) - 2.50644 #relation from Sartoretti+23
         radial_vel_unc = sig_floor + b * np.exp(a * (grvs_mag - G_RVS0)) #in km/s
 
-    elif rls in ('dr4', 'dr5', 'NIR'):
+        # DR3 validity cuts
+        invalid = ((grvs_mag > 14.0)| (radial_vel_unc > 20.0))
+        radial_vel_unc = np.where(invalid, np.nan, radial_vel_unc)
+
+    elif rls in ('dr4','dr5','NIR_M5','NIR_M10','NIR_L5','NIR_L10'):
         rv_nb_transits = 32 if rls == 'dr4' else 64
 
         S = 10**((21.317-grvs_mag)/2.5) * rv_nb_transits * 4.4167032 * 3 * (0.02453/24.0)
@@ -306,6 +310,13 @@ def uncertainties(G, bp_rp, rls = 'dr3'):
         
         h = (1 + np.tanh(k * (np.log10(snr) - np.log10(snr_break))))/2
         radial_vel_unc = h * sig_high_SNR + (1 - h) * sig_low_SNR #in km/s
+
+        # DR4/DR5 onwards validity cuts
+        invalid = (grvs_mag > 16.0) #| ((grvs_mag > 12.0) & (teff > 7000.0)
+        radial_vel_unc = np.where(invalid, np.nan, radial_vel_unc)
+
+    else:
+        print("Incompatible data release requested.")
 
     return plx_unc, ra_unc, dec_unc, pmra_unc, pmdec_unc, radial_vel_unc
 
