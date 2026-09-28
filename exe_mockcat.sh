@@ -47,4 +47,4 @@ awk -v t=$seconds 'BEGIN{t=int(t*1000); printf "%d:%02d:%02d\n", t/3600000, t/60
 
 # removing all intermediate files
 rm "${input_file%.*}"_coords.pkl
-rm "${input_file%.*}_observ_out_pt"*.pkl
+rm "${input_file%.*}"_observ.pkl

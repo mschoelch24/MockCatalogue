@@ -72,7 +72,6 @@ def main():
 
     df.to_pickle(simname+ '_mock_'+ tracer+ '_'+ rls+'.pkl',compression='zip')
     print("Mock dataframe contains columns", list(df), "and has length", len(df))
-    df.to_csv(simname+ '_mock_'+ tracer+ '_'+ rls+'.csv')
  
     tf = time.time()
     t_total = tf - t0
