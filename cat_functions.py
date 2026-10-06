@@ -229,8 +229,10 @@ def magnitude_RGB(d, Av):
         G - in mag
     """
     color_mag_samples = np.load("kde_color_mag_samples.npz")
-    bp_rp = np.random.choice(color_mag_samples["color"], size=len(d), replace=True)
-    abs_magnitude = np.random.choice(color_mag_samples["magnitude"], size=len(d), replace=True)
+    idx = np.random.choice(len(color_mag_samples["color"]), size=len(d), replace=True)
+    
+    bp_rp = color_mag_samples["color"][idx]
+    abs_magnitude = color_mag_samples["magnitude"][idx]
     
     Ag = 0.98703 * Av - 0.14452 * bp_rp * Av + 0.01126 * bp_rp**2 * Av + 0.03313 * Av**2 - 0.00389 * bp_rp * Av**2
     G = abs_magnitude + 5 * np.log10(d*1e3) - 5 + Ag
