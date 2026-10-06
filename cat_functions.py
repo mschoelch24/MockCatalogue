@@ -216,6 +216,8 @@ def magnitude(d, Av):
     K = -1.62 + 5 * np.log10(d*1e3) - 5 + (0.114* Av)
     color = (0.282 - 0.114) * Av + 0.55
     G = K - 0.286 + 4.023 * color - 0.35 * color **2 + 0.021 * color ** 3
+    
+    color_mag_samples = np.load("kde_color_mag_samples.npz")
     bp_rp = np.random.choice(color_mag_samples["color"], size=len(d), replace=True)
     return G, bp_rp
 
@@ -278,11 +280,7 @@ def uncertainties(G, bp_rp, rls = 'dr3'):
         b = 6.0 #km/s
         sig_floor = 0.12 #km/s
         G_RVS0 = 14.0 #mag
-
-        color_mag_samples = np.load("kde_color_mag_samples.npz")
-        bp_rp = np.random.choice(color_mag_samples["color"], size=len(G), replace=True)
-
-        grvs_mag = G +2.82382 * np.exp(-0.489827 * bp_rp) - 2.50644 #relation from Sartoretti+23
+        
         radial_vel_unc = sig_floor + b * np.exp(a * (grvs_mag - G_RVS0)) #in km/s
 
         # DR3 validity cuts
