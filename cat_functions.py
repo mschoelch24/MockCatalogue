@@ -156,14 +156,11 @@ def extinction_lm(l, b, d, id_n):
         d_vals = np.array([d0,d1])
 
         extinction_vals = np.array([[[A000,A001],[A010,A011]],[[A100,A101],[A110,A111]]])
-        rgi = RegularGridInterpolator((l_vals, b_vals, d_vals), extinction_vals, bounds_error=False, fill_value = None)
-        
-        # extrapolation inflates extinction - we set boundary case:
-        d_vals_lim = np.array([14.9, 15])
-        extinction_vals_lim =np.array([[[A001,A001],[A011,A011]],[[A101,A101],[A111,A111]]])
-        if d > 15:
-            rgi = RegularGridInterpolator((l_vals, b_vals, d_vals_lim), extinction_vals_lim, bounds_error=False, fill_value = None)
-        ext_d = rgi(np.array([l, b, d]))[0]
+        rgi = RegularGridInterpolator((l_vals, b_vals, d_vals), extinction_vals, bounds_error=True)
+        # extrapolation inflates extinction - set limit at d max:
+        d_interp = min(d, d_vals.max())
+        ext_d = rgi([l, b, d_interp])[0]
+
     except Exception as e:
         print("Failed on star with id ", id_n)
         print(e)
