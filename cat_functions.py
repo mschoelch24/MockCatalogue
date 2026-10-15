@@ -205,7 +205,7 @@ def magnitude(d, Av):
     Calculating the G magnitude of stars from apparent K magnitude and color. 
     We assign Red Clump stellar parameters, i.e. absolute magnitude Mk = -1.62 and intrinsic colour (J-K)0 = 0.55, and use the extinction relations Ak = 0.114*Av and Aj = 0.282*Av.
     Input:
-        d - heliocentric distance of the star in parsec
+        d - heliocentric distance of the star in kpc
         Av - extinction in V band
     Output: 
         G - in mag
@@ -214,8 +214,7 @@ def magnitude(d, Av):
     color = (0.282 - 0.114) * Av + 0.55
     G = K - 0.286 + 4.023 * color - 0.35 * color **2 + 0.021 * color ** 3
     
-    color_mag_samples = np.load("kde_color_mag_samples.npz")
-    bp_rp = np.random.choice(color_mag_samples["color"], size=len(d), replace=True)
+    bp_rp = 0.09396 + 2.581 * color	- 2.782 * color **2	+ 2.788 * color ** 3 - 0.8027 * color ** 4
     return G, bp_rp
 
 def magnitude_RGB(d, Av):
